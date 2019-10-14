@@ -9,17 +9,19 @@ import android.content.Intent;
 import java.util.ArrayList;
 import java.util.List;
 
+import static es.us.myapplication.Activity2DispositivosBT.mBluetoothAdapter;
 import static es.us.myapplication.OnActivityResult.REQUEST_ENABLE_BT;
 
 public class OnResume {
     private static final OnResume onResume = new OnResume();
-    static BluetoothAdapter mBluetoothAdapter;
-    static BluetoothLeScanner mLEScanner;
-    static ScanSettings settings;
-    static List<ScanFilter> filters;
+    //static BluetoothAdapter mBluetoothAdapter;
+    //static BluetoothLeScanner mLEScanner;
+    //static ScanSettings settings;
+    //static List<ScanFilter> filters;
 
 
     public static OnResume getInstance() {
+
         return onResume;
     }
 
@@ -29,9 +31,9 @@ public class OnResume {
             Activity2DispositivosBT.fa.startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
 
         } else {
-            mLEScanner = mBluetoothAdapter.getBluetoothLeScanner();
-            settings = new ScanSettings.Builder().setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY).build();
-            filters = new ArrayList<>();
+            Activity2DispositivosBT.mLEScanner = mBluetoothAdapter.getBluetoothLeScanner();
+            Activity2DispositivosBT.settings = new ScanSettings.Builder().setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY).build();
+            Activity2DispositivosBT.filters = new ArrayList<>();
             new ScanLeDevice(true);
         }
     }

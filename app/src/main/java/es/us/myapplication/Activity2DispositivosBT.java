@@ -29,12 +29,23 @@ import android.content.Context;
 import java.util.ArrayList;
 import java.util.List;
 
+import static es.us.myapplication.ScanLeDevice.SCAN_PERIOD;
+import static es.us.myapplication.ScanLeDevice.scanResults;
+
 /**
  * Activity for scanning and displaying available Bluetooth LE devices.
  */
 public class Activity2DispositivosBT extends AppCompatActivity {
 
     public static Activity fa;
+    static Handler mHandler;
+    static BluetoothAdapter mBluetoothAdapter;
+
+    static BluetoothLeScanner mLEScanner;
+    static ScanSettings settings;
+    static List<ScanFilter> filters;
+
+
 /*
     private BluetoothAdapter mBluetoothAdapter;
     private BluetoothLeScanner mLEScanner;
@@ -52,11 +63,12 @@ public class Activity2DispositivosBT extends AppCompatActivity {
         protected void onCreate(Bundle savedInstanceState) {
 
             super.onCreate(savedInstanceState);
+
             fa = this;
             setContentView(R.layout.activity_activity2_dispositivos_bt);
-            ScanLeDevice.listaConexiones = findViewById(R.id.listaConexiones);
+            //ScanLeDevice.listaConexiones = findViewById(R.id.listaConexiones);
 
-            ScanLeDevice.mHandler = new Handler();
+            mHandler = new Handler();
             //BluetoothManager
             if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
                 Toast.makeText(this, "BLE Not Supported", Toast.LENGTH_SHORT).show();
@@ -64,8 +76,43 @@ public class Activity2DispositivosBT extends AppCompatActivity {
             }
             final BluetoothManager bluetoothManager =
                     (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
-            OnResume.mBluetoothAdapter = bluetoothManager.getAdapter();
+
+            mBluetoothAdapter = bluetoothManager.getAdapter();
+            mLEScanner = mBluetoothAdapter.getBluetoothLeScanner();
+            settings = new ScanSettings.Builder().setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY).build();
+            filters = new ArrayList<>();
+            mLEScanner.startScan(filters, settings, mScanCallback);
+
         }
+    private ScanCallback mScanCallback;
+    {
+        mScanCallback = new ScanCallback() {
+            @Override
+            public void onScanResult(int callbackType, ScanResult result) {
+                Log.i("FATIMA", String.valueOf(result.getRssi()));
+                //AÑADIENDO DISPOSITIVOS A LA LISTA PARA MOSTRAR
+                //scanResults.add(callbackType,result.toString());
+                //Context mContext = GlobalApp.getAppContext();
+                //ArrayAdapter<String> adapter =  new ArrayAdapter<String>(mContext, android.R.layout.simple_list_item_1, scanResults);
+                //System.out.println(result.getDevice().getName() + result.getRssi());
+                BluetoothDevice btDevice = result.getDevice();
+                new ConectToDevice(btDevice);
+            }
+
+            @Override
+            public void onBatchScanResults(List<ScanResult> results) {
+                for (ScanResult sr : results) {
+                    Log.i("ScanResult - Results", sr.toString());
+                }
+             }
+
+            @Override
+            public void onScanFailed(int errorCode) {
+                Log.e("Scan Failed", "Error Code: " + errorCode);
+            }
+        };
+    }
+
 /*
         @Override
         protected void onResume() {

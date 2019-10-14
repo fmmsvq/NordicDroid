@@ -4,32 +4,36 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanResult;
 import android.content.Context;
-import android.os.Handler;
 import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import java.util.List;
 
+import static es.us.myapplication.Activity2DispositivosBT.filters;
+import static es.us.myapplication.Activity2DispositivosBT.mLEScanner;
+import static es.us.myapplication.Activity2DispositivosBT.settings;
 
-import static es.us.myapplication.OnResume.filters;
-import static es.us.myapplication.OnResume.mLEScanner;
-import static es.us.myapplication.OnResume.settings;
+
+//import static es.us.myapplication.OnResume.filters;
+//import static es.us.myapplication.OnResume.mLEScanner;
+//import static es.us.myapplication.OnResume.settings;
 
 public class ScanLeDevice {
 
     static boolean enable1;
-    static Handler mHandler;
+
     static List<String> scanResults;
     static ListView listaConexiones;
     static final long SCAN_PERIOD = 10000;
+
     private static final ScanLeDevice scanLeDevice = new ScanLeDevice(enable1);
 
 
     public ScanLeDevice(boolean enable) {
         enable1=enable;
         if (enable) {
-            mHandler.postDelayed(new Runnable() {
+            Activity2DispositivosBT.mHandler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     mLEScanner.stopScan(mScanCallback);
@@ -39,10 +43,6 @@ public class ScanLeDevice {
         } else {
             mLEScanner.stopScan(mScanCallback);
         }
-    }
-
-    static ScanLeDevice getInstance() {
-        return scanLeDevice;
     }
 
     private ScanCallback mScanCallback;
@@ -84,5 +84,9 @@ public class ScanLeDevice {
                 Log.e("Scan Failed", "Error Code: " + errorCode);
             }
         };
+    }
+
+    static ScanLeDevice getInstance() {
+        return scanLeDevice;
     }
 }
